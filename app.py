@@ -91,22 +91,24 @@ def save_data(data):
 # Fungsi untuk mengelola unggahan gambar
 def handle_image_upload(uploaded_files, odp_name):
     saved_paths = []
+    folder = "uploaded_images"
     
     # Buat folder jika belum ada
-    if not os.path.exists('uploaded_images'):
-        os.makedirs('uploaded_images')
+    try:
+        os.makedirs(folder, exist_ok=True)
+    except Exception as e:
+        st.error(f"Gagal membuat folder '{folder}': {str(e)}")
+        return []
     
     for i, uploaded_file in enumerate(uploaded_files):
-        # Baca gambar
-        image = Image.open(uploaded_file)
-        
-        # Generate nama file unik
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"uploaded_images/{odp_name}_{timestamp}_{i}.jpg"
-        
-        # Simpan gambar
-        image.save(filename)
-        saved_paths.append(filename)
+        try:
+            image = Image.open(uploaded_file)
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = os.path.join(folder, f"{odp_name}_{timestamp}_{i}.jpg")
+            image.save(filename)
+            saved_paths.append(filename)
+        except Exception as e:
+            st.error(f"Gagal menyimpan gambar: {str(e)}")
     
     return saved_paths
 
